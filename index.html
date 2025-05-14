@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compresor de PDF Online</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Compresor de PDF</h1>
+        <p class="description">Esta aplicación reduce un 60% del peso original del documento</p>
+        
+        <div class="upload-area" id="dropArea">
+            <input type="file" id="fileInput" accept=".pdf" hidden>
+            <label for="fileInput" class="upload-btn">Seleccionar PDF</label>
+            <p>o arrastra y suelta el archivo aquí</p>
+        </div>
+        
+        <div class="progress-container" id="progressContainer" style="display: none;">
+            <div class="progress-bar" id="progressBar"></div>
+            <span id="progressText">0%</span>
+        </div>
+        
+        <div class="result" id="resultContainer" style="display: none;">
+            <a id="downloadLink" class="download-btn">Descargar PDF Comprimido</a>
+        </div>
+        
+        <footer>
+            <p>Creado por: Jenrry Soto Dextre</p>
+            <a href="https://dextre.xyz" target="_blank">Web: https://dextre.xyz</a>
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
+
+
