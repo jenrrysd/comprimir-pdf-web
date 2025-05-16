@@ -3,6 +3,11 @@ import subprocess
 import tempfile
 import boto3
 from urllib.parse import unquote_plus
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
 
 s3 = boto3.client('s3')
 

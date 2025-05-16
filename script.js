@@ -98,30 +98,74 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     async function uploadAndCompress(file) {
-        return new Promise((resolve, reject) => {
-            // Aquí implementarías la llamada a tu API Gateway/Lambda
-            // Esto es un ejemplo simulando una subida
-            
-            // Simular progreso
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 5;
-                updateProgress(progress, `Comprimiendo PDF... ${progress}%`);
+            try {
+                // 1. Obtener URL pre-firmada para subida directa a S3
+                const uploadResponse = await fetch('https://s5uaek6aey3wxbu57ujy3ymqum0iymnr.lambda-url.us-east-1.on.aws/', {
+                    mode: 'no-cors',
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        filename: file.name,
+                        action: 'getUploadUrl' // Nueva acción
+                    })
+                });
                 
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    // En una implementación real, aquí obtendrías la URL del S3
-                    // resolve(responseData.compressedUrl);
+                const { uploadUrl, key } = await uploadResponse.json();
+                
+                // 2. Subir el archivo directamente a S3
+                const uploadResult = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    body: file,
+                    headers: { 'Content-Type': file.type }
+                });
+                
+                if (!uploadResult.ok) throw new Error('Error al subir a S3');
+                
+                // 3. Obtener URL de descarga después de procesar
+                const downloadResponse = await fetch('https://s5uaek6aey3wxbu57ujy3ymqum0iymnr.lambda-url.us-east-1.on.aws/', {
+                    mode: 'no-cors',
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        key: key,
+                        action: 'getDownloadUrl' // Nueva acción
+                    })
+                });
+                
+                return (await downloadResponse.json()).downloadUrl;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                throw error;
+            }
+        }
+
+
+    // async function uploadAndCompress(file) {
+    //     return new Promise((resolve, reject) => {
+    //         // Aquí implementarías la llamada a tu API Gateway/Lambda
+    //         // Esto es un ejemplo simulando una subida
+            
+    //         // Simular progreso
+    //         let progress = 0;
+    //         const interval = setInterval(() => {
+    //             progress += 5;
+    //             updateProgress(progress, `Comprimiendo PDF... ${progress}%`);
+                
+    //             if (progress >= 100) {
+    //                 clearInterval(interval);
+    //                 // En una implementación real, aquí obtendrías la URL del S3
+    //                 // resolve(responseData.compressedUrl);
                     
-                    // Simulación: crear un blob local para demostración
-                    setTimeout(() => {
-                        const blob = new Blob([file], { type: 'application/pdf' });
-                        const url = URL.createObjectURL(blob);
-                        resolve(url);
-                    }, 500);
-                }
-            }, 200);
-        });
-    }
+    //                 // Simulación: crear un blob local para demostración
+    //                 setTimeout(() => {
+    //                     const blob = new Blob([file], { type: 'application/pdf' });
+    //                     const url = URL.createObjectURL(blob);
+    //                     resolve(url);
+    //                 }, 500);
+    //             }
+    //         }, 200);
+    //     });
+    // }
 });
 
