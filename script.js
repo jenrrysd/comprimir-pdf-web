@@ -101,9 +101,11 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 // 1. Obtener URL pre-firmada para subida directa a S3
                 const uploadResponse = await fetch('https://s5uaek6aey3wxbu57ujy3ymqum0iymnr.lambda-url.us-east-1.on.aws/', {
-                    mode: 'no-cors',
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify({ 
                         filename: file.name,
                         action: 'getUploadUrl' // Nueva acción
@@ -123,9 +125,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // 3. Obtener URL de descarga después de procesar
                 const downloadResponse = await fetch('https://s5uaek6aey3wxbu57ujy3ymqum0iymnr.lambda-url.us-east-1.on.aws/', {
-                    mode: 'no-cors',
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify({ 
                         key: key,
                         action: 'getDownloadUrl' // Nueva acción
