@@ -21,12 +21,13 @@
 <body>
     <div class="container">
         <h1>Compresor de PDF</h1>
-        <p class="description">Esta aplicación reduce un 60% el peso original del documento</p>
+        <p class="subtitle">Reduce hasta un 60% del peso original del documento</p>
         
-        <div class="upload-area" id="dropArea">
+        <div class="upload-area" id="dropZone">
             <input type="file" id="fileInput" accept=".pdf" hidden>
-            <label for="fileInput" class="upload-btn">Seleccionar PDF</label>
-            <p>o arrastra y suelta el archivo aquí</p>
+            <img src="upload-icon.png" alt="Upload" class="upload-icon">
+            <p>Arrastra tu archivo PDF aquí o haz clic para seleccionar</p>
+            <button id="selectBtn">Seleccionar archivo</button>
         </div>
         
         <div class="progress-container" id="progressContainer" style="display: none;">
@@ -35,17 +36,16 @@
         </div>
         
         <div class="result" id="resultContainer" style="display: none;">
-            <a id="downloadLink" class="download-btn">Descargar PDF Comprimido</a>
+            <p id="resultMessage"></p>
+            <a href="#" id="downloadBtn" class="download-btn" style="display: none;">Descargar PDF comprimido</a>
         </div>
         
-        <footer>
+        <div class="footer">
             <p>Creado por: Jenrry Soto Dextre</p>
-            <a href="https://dextre.xyz" target="_blank">Web: https://dextre.xyz</a>
-        </footer>
+            <p><a href="https://dextre.xyz" target="_blank">Web: https://dextre.xyz</a></p>
+        </div>
     </div>
     
     <script src="script.js"></script>
 </body>
 </html>
-
-
