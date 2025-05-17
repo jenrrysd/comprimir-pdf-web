@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showError('Error de conexión. Por favor, intenta nuevamente.');
         };
         
-        xhr.open('POST', 'https://comprimirpdf.dextre.xyz/comprimir', true);
+        xhr.open('POST', 'https://tyhmtlbb8b.execute-api.us-east-1.amazonaws.com/prod/comprimir', true);
         xhr.setRequestHeader('Content-Type', 'multipart/form-data');
         xhr.send(formData);
     }
