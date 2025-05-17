@@ -97,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         xhr.open('POST', 'https://comprimirpdf.dextre.xyz/comprimir', true);
+        xhr.setRequestHeader('Content-Type', 'multipart/form-data');
         xhr.send(formData);
     }
     
