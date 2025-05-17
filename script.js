@@ -1,175 +1,128 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
-    const dropArea = document.getElementById('dropArea');
+    const selectBtn = document.getElementById('selectBtn');
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.getElementById('progressBar');
     const progressText = document.getElementById('progressText');
     const resultContainer = document.getElementById('resultContainer');
-    const downloadLink = document.getElementById('downloadLink');
+    const resultMessage = document.getElementById('resultMessage');
+    const downloadBtn = document.getElementById('downloadBtn');
     
-    // Manejar selección de archivo
-    fileInput.addEventListener('change', handleFiles);
-    
-    // Manejar drag and drop
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, preventDefaults, false);
-    });
-    
-    function preventDefaults(e) {
-        e.preventDefault();
+    // Handle file selection via button
+    selectBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-    }
-    
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropArea.addEventListener(eventName, highlight, false);
+        fileInput.click();
     });
     
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, unhighlight, false);
+    // Handle file input change
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            handleFile(this.files[0]);
+        }
     });
     
-    function highlight() {
-        dropArea.classList.add('drag-over');
-    }
+    // Handle drag and drop
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('drag-over');
+    });
     
-    function unhighlight() {
-        dropArea.classList.remove('drag-over');
-    }
+    dropZone.addEventListener('dragleave', function() {
+        this.classList.remove('drag-over');
+    });
     
-    dropArea.addEventListener('drop', handleDrop, false);
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        
+        if (e.dataTransfer.files.length > 0) {
+            handleFile(e.dataTransfer.files[0]);
+        }
+    });
     
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        fileInput.files = files;
-        handleFiles({ target: fileInput });
-    }
-    
-    async function handleFiles(e) {
-        const file = e.target.files[0];
-        if (!file || file.type !== 'application/pdf') {
-            alert('Por favor selecciona un archivo PDF válido');
+    // Handle the file
+    function handleFile(file) {
+        // Validate file type
+        if (!file.name.toLowerCase().endsWith('.pdf')) {
+            showError('Por favor, sube solo archivos PDF.');
             return;
         }
         
-        // Mostrar progreso
-        progressContainer.style.display = 'block';
-        resultContainer.style.display = 'none';
-        updateProgress(0, 'Preparando archivo...');
+        // Validate file size (max 25MB)
+        if (file.size > 25 * 1024 * 1024) {
+            showError('El archivo es demasiado grande. El tamaño máximo es 25MB.');
+            return;
+        }
         
-        try {
-            // Subir archivo a Lambda para comprimir
-            const compressedPdfUrl = await uploadAndCompress(file);
-            
-            // Mostrar resultado
-            downloadLink.href = compressedPdfUrl;
-            downloadLink.download = file.name.replace('.pdf', '_copia.pdf');
-            resultContainer.style.display = 'block';
-            progressContainer.style.display = 'none';
-
-
-
-            // Agregar evento para resetear después de descargar
-            downloadLink.addEventListener('click', function afterDownload() {
-                setTimeout(() => {
-                    resultContainer.style.display = 'none';
-                    // Limpiar el objeto URL si es local
-                    if (compressedPdfUrl.startsWith('blob:')) {
-                        URL.revokeObjectURL(compressedPdfUrl);
-                    }
-                    // Resetear el input file
-                    fileInput.value = '';
-                }, 1000);
-            }, {once: true}); // El listener se autoeliminará después de ejecutarse
-
-
-
-            
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error al comprimir el PDF: ' + error.message);
-            progressContainer.style.display = 'none';
-        }
-    }
-    
-    function updateProgress(percent, message) {
-        progressBar.style.width = `${percent}%`;
-        progressText.textContent = message || `${percent}%`;
-    }
-    
-    async function uploadAndCompress(file) {
-            try {
-                // 1. Obtener URL pre-firmada para subida directa a S3
-                const uploadResponse = await fetch('https://s5uaek6aey3wxbu57ujy3ymqum0iymnr.lambda-url.us-east-1.on.aws/', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        filename: file.name,
-                        action: 'getUploadUrl' // Nueva acción
-                    })
-                });
-                
-                const { uploadUrl, key } = await uploadResponse.json();
-                
-                // 2. Subir el archivo directamente a S3
-                const uploadResult = await fetch(uploadUrl, {
-                    method: 'PUT',
-                    body: file,
-                    headers: { 'Content-Type': file.type }
-                });
-                
-                if (!uploadResult.ok) throw new Error('Error al subir a S3');
-                
-                // 3. Obtener URL de descarga después de procesar
-                const downloadResponse = await fetch('https://s5uaek6aey3wxbu57ujy3ymqum0iymnr.lambda-url.us-east-1.on.aws/', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        key: key,
-                        action: 'getDownloadUrl' // Nueva acción
-                    })
-                });
-                
-                return (await downloadResponse.json()).downloadUrl;
-                
-            } catch (error) {
-                console.error('Error:', error);
-                throw error;
+        // Prepare for upload
+        resetUI();
+        progressContainer.style.display = 'block';
+        resultContainer.style.display = 'block';
+        resultMessage.textContent = 'Comprimiendo PDF...';
+        
+        // Create FormData and upload
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const xhr = new XMLHttpRequest();
+        
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                updateProgress(percent);
             }
-        }
-
-
-    // async function uploadAndCompress(file) {
-    //     return new Promise((resolve, reject) => {
-    //         // Aquí implementarías la llamada a tu API Gateway/Lambda
-    //         // Esto es un ejemplo simulando una subida
-            
-    //         // Simular progreso
-    //         let progress = 0;
-    //         const interval = setInterval(() => {
-    //             progress += 5;
-    //             updateProgress(progress, `Comprimiendo PDF... ${progress}%`);
-                
-    //             if (progress >= 100) {
-    //                 clearInterval(interval);
-    //                 // En una implementación real, aquí obtendrías la URL del S3
-    //                 // resolve(responseData.compressedUrl);
-                    
-    //                 // Simulación: crear un blob local para demostración
-    //                 setTimeout(() => {
-    //                     const blob = new Blob([file], { type: 'application/pdf' });
-    //                     const url = URL.createObjectURL(blob);
-    //                     resolve(url);
-    //                 }, 500);
-    //             }
-    //         }, 200);
-    //     });
-    // }
+        };
+        
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    showSuccess(response.download_url);
+                } else {
+                    showError(response.error || 'Error al comprimir el PDF.');
+                }
+            } else {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    showError(response.error || 'Error en el servidor.');
+                } catch {
+                    showError('Error al conectar con el servidor.');
+                }
+            }
+        };
+        
+        xhr.onerror = function() {
+            showError('Error de conexión. Por favor, intenta nuevamente.');
+        };
+        
+        xhr.open('POST', '/compress', true);
+        xhr.send(formData);
+    }
+    
+    function updateProgress(percent) {
+        progressBar.style.width = percent + '%';
+        progressText.textContent = percent + '%';
+    }
+    
+    function showSuccess(downloadUrl) {
+        progressContainer.style.display = 'none';
+        resultMessage.textContent = '¡PDF comprimido con éxito!';
+        downloadBtn.href = downloadUrl;
+        downloadBtn.style.display = 'inline-block';
+    }
+    
+    function showError(message) {
+        progressContainer.style.display = 'none';
+        resultMessage.textContent = message;
+        resultMessage.classList.add('error');
+    }
+    
+    function resetUI() {
+        progressBar.style.width = '0%';
+        progressText.textContent = '0%';
+        resultMessage.textContent = '';
+        resultMessage.classList.remove('error');
+        downloadBtn.style.display = 'none';
+    }
 });
-
