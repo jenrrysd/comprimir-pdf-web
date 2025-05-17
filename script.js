@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showError('Error de conexión. Por favor, intenta nuevamente.');
         };
         
-        xhr.open('POST', '/comprimir', true);
+        xhr.open('POST', 'https://comprimirpdf.dextre.xyz/comprimir', true);
         xhr.send(formData);
     }
     
