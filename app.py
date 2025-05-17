@@ -38,7 +38,7 @@ def lambda_handler(event, context):
             ], check=True)
             
             # Subir PDF comprimido de vuelta a S3
-            output_key = f"compressed/{os.path.splitext(key)[0]}_copia.pdf"
+            output_key = f"uploads/{os.path.splitext(key)[0]}_copia.pdf"
             s3.upload_file(output_pdf, bucket, output_key)
             
             # Generar URL firmada para descarga

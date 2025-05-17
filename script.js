@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showError('Error de conexión. Por favor, intenta nuevamente.');
         };
         
-        xhr.open('POST', '/compress', true);
+        xhr.open('POST', '/uploads', true);
         xhr.send(formData);
     }
     
