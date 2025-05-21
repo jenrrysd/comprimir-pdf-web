@@ -3,51 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Metaetiquetas Open Graph -->
-    <meta property="og:title" content="Comprimir PDF">
-    <meta property="og:description" content="Comprime tus pdf a un 60%">
-    <meta property="og:image" content="https://comprimirpdf.dextre.xyz/images/miniatura.png">
-    <!-- <meta property="og:image" content="http://192.168.1.80:5500/images/miniatura.png"> -->
-    <meta property="og:url" content="https://comprimirpdf.dextre.xyz">
-
-    <!--Aqui se agrega el favicon -->
-    <link rel="icon" type="image/png" href="images/favicon.png">
-
-
-    <title>Compresor de PDF Online</title>
+    <title>Reduccion PDF</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Compresor de PDF</h1>
-        <p class="subtitle">Reduce hasta un 60% del peso original del documento</p>
-        
-        <div class="upload-area" id="dropZone">
-            <input type="file" id="fileInput" accept=".pdf" hidden>
-            <img src="images/miniatura.png" alt="Upload" class="upload-icon">
-            <p>Arrastra tu archivo PDF aquí o haz clic para seleccionar</p>
-            <button id="selectBtn">Seleccionar archivo</button>
-        </div>
-        
-        <div class="progress-container" id="progressContainer" style="display: none;">
-            <div class="progress-bar" id="progressBar"></div>
-            <span id="progressText">0%</span>
-        </div>
-        
-        <div class="result" id="resultContainer" style="display: none;">
-            <p id="resultMessage"></p>
-            <a href="#" id="downloadBtn" class="download-btn" style="display: none;">Descargar PDF comprimido</a>
-        </div>
-        
-        <div class="footer">
-            <p>Creado por: Jenrry Soto Dextre</p>
-            <p><a href="https://dextre.xyz" target="_blank">Web: https://dextre.xyz</a></p>
-        </div>
+        <h1>Reducir PDF</h1>
+        <p style="color: rgb(3, 36, 3);">Sube tu pdf para reducir el peso del documento</p>
+            <div class="upload-box">
+                <!-- <form action="http://192.168.1.80:4040/tmp/compress" method="POST" enctype="multipart/form-data"> -->
+                <form action="http://comprimirpdf.dextre.xyz/tmp/compress" method="POST" enctype="multipart/form-data">
+                    <input type="file" name="pdf" accept="application/pdf" required>
+                    <p style="color: rgb(3, 36, 3);">Esta aplicación reduce un 60% <br> el peso original del PDF</p>
+                    <button type="submit">Reducir PDF</button><p></p>
+                    <button type="reset" id="btnClean">Limpiar</button><p></p>
+                </form>
+            </div>
+
+
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+
+
+            <div>
+                <footer>
+                    <p>Creado por Jenrry Soto Dextre</p>
+                    <p><a href="https://dextre.xyz" target="_blank">Web: https://dextre.xyz</a></p>
+                </footer>
+            </div>
+
     </div>
-    <!-- <script src="lambda_function.py"></script> -->
-
     <script src="script.js"></script>
-
 </body>
 </html>
