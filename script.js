@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
             progressText.textContent = "Error de red";
         };
 
-        // xhr.send(formData);
+        xhr.send(formData);
     });
 
     // 🧼 Limpiar la barra de progreso al presionar "Limpiar"
