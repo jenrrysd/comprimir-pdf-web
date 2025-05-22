@@ -16,7 +16,7 @@ def compress_pdf():
     if request.method == 'OPTIONS':
         # Respuesta a la preflight request
         response = app.make_default_options_response()
-        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Origin'] = 'https://comprimirpdf.dextre.xyz'
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
         return response
