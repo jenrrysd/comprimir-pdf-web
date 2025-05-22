@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // xhr.open("POST", form.action, true);
         // xhr.responseType = "blob"; // Para manejar la respuesta como archivo
 
-        xhr.open("POST", "https://l75ytnbxsb.execute-api.us-east-1.amazonaws.com/prod/tmp/compress", true);
+        xhr.open("POST", "https://pha8z358l3.execute-api.us-east-1.amazonaws.com/prod/tmp/compress", true);
         xhr.responseType = "blob"; // Para manejar la respuesta como archivo
         // xhr.setRequestHeader("Accept", "application/json");
         // No pongas Content-Type manual si usas formData, deja que el navegador lo defina
