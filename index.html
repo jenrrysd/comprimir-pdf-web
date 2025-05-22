@@ -13,7 +13,8 @@
             <div class="upload-box">
                 <!-- <form action="http://192.168.1.80:4040/tmp/compress" method="POST" enctype="multipart/form-data"> -->
                 <!-- <form action="https://comprimirpdf.dextre.xyz/tmp/compress" method="POST" enctype="multipart/form-data"> -->
-                <form action="https://l75ytnbxsb.execute-api.us-east-1.amazonaws.com/prod/tmp/compress" method="POST" enctype="multipart/form-data">
+                <!-- <form action="https://l75ytnbxsb.execute-api.us-east-1.amazonaws.com/prod/tmp/compress" method="POST" enctype="multipart/form-data"> -->
+                <form action="arn:aws:execute-api:us-east-1:396608815467:l75ytnbxsb/*/POST/tmp/compress" method="POST" enctype="multipart/form-data">
                     <input type="file" name="pdf" accept="application/pdf" required>
                     <p style="color: rgb(3, 36, 3);">Esta aplicación reduce un 60% <br> el peso original del PDF</p>
                     <button type="submit">Reducir PDF</button><p></p>
